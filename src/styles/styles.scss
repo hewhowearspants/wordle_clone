@@ -1,0 +1,46 @@
+@import './reset.scss';
+@import './mixins.scss';
+@import './gameboard.scss';
+@import './keyboard.scss';
+
+$header-height: 35px;
+
+body {
+  box-sizing: border-box;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.App {
+  background-color: #282c34;
+  color: white;
+
+  .App-header {
+    height: $header-height;
+    @include flex(center, flex-start);
+    padding: 0px 8px;
+    .header-title {
+      flex: 1;
+      @media (min-width: 768px) {
+        text-align: center;
+        font-size: 30px;
+      }
+    }
+  }
+  
+  .App-content {
+    min-height: calc(100vh - $header-height);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    font-size: calc(10px + 2vmin);
+    text-align: center;
+  }
+}
+
+

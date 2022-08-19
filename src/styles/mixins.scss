@@ -1,0 +1,30 @@
+@mixin flex($align: center, $justify: center, $direction: null, $wrap: null, $display: flex) {
+  display: $display;
+  justify-content: $justify;
+  align-items: $align;
+	flex-direction: $direction;
+	flex-wrap: $wrap;
+}
+
+// For use with absolute-positioned elements
+@mixin vertical-align($align: center) {
+  @if $align == center {
+    top: 50%;
+    transform: translateY(-50%);
+  } @else if $align == top {
+    top: 0%;
+  } @else if $align == bottom {
+    bottom: 0%;
+  }
+}
+
+@mixin horizontal-align($align: center) {
+  @if $align == center {
+    left: 50%;
+    transform: translateX(-50%);
+  } @else if $align == left {
+    left: 0%;
+  } @else if $align == right {
+    right: 0%;
+  }
+}

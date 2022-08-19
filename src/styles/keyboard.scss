@@ -1,0 +1,50 @@
+.keyboard {
+  width: calc(100% - 16px);
+  max-width: 500px;
+  margin: 0px 8px;
+  .row {
+    display: flex;
+    width: 100%;
+    margin: 0 auto 8px;
+
+    .key {
+      cursor: pointer;
+      background: grey;
+      -webkit-tap-highlight-color: rgba(255,255,255,0.5);
+      color: white;
+      flex: 1;
+      height: 50px;
+      margin-right: 5px;
+      border: none;
+      border-radius: 3px;
+      text-align: center;
+      text-transform: uppercase;
+      font-size: inherit;
+
+      @include flex(center, center);
+
+      &:last-of-type {
+        margin-right: 0px;
+      }
+      &:disabled {
+        cursor: no-drop;
+        color: black;
+      }
+
+      &#Enter,
+      &#Backspace {
+        flex: 1.5;
+      }
+      &#Enter {
+        background-color: rgba(0,255,0,0.5);
+        &:disabled {
+          background-color: rgba(0,255,0,0.25)
+        }
+      }
+      &#Backspace {
+        background-color: rgba(255,0,0,0.5);
+        color: lightgrey;
+      }
+    }
+  }
+}
