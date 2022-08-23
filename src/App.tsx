@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { allowedWords, words } from './words';
 import GameBoard from './GameBoard';
 import Keyboard from './Keyboard';
+import GameOverModal from './GameOverModal';
 
 import {
   AnalysisArray,
@@ -23,6 +24,8 @@ interface State {
   currentWord: WordArray,
   currentWordValid: boolean,
   gameWon: boolean,
+  showModal: boolean,
+  usedLetters: { [key: string]: string },
 }
 
 class App extends Component {
@@ -34,6 +37,8 @@ class App extends Component {
     currentWord: [],
     currentWordValid: true,
     gameWon: false,
+    showModal: false,
+    usedLetters: {},
   } as State;
 
   componentDidMount() {
@@ -45,8 +50,12 @@ class App extends Component {
   }
 
   componentDidUpdate(_, prevState) {
-    if (this.state.currentGuess === MAX_GUESSES) {
+    if (
+      (prevState.currentGuess !== MAX_GUESSES && this.state.currentGuess === MAX_GUESSES)
+      || (!prevState.gameWon && this.state.gameWon)
+    ) {
       window.removeEventListener('keydown', this.updateCurrentWord);
+      this.setState({ showModal: true });
     }
   }
 
@@ -97,7 +106,9 @@ class App extends Component {
           });
         }
       } else {
-        // show YOU LOSE
+        this.setState({
+          showModal: true
+        });
         // save results to localStorage
       }
     }
@@ -131,25 +142,35 @@ class App extends Component {
   }
 
   analyzeWord = (currentWord = this.state.currentWord) => {
-    const { currentSolution, analyzedBoard } = this.state;
+    const { currentSolution, analyzedBoard, usedLetters } = this.state;
     const solutionArray = currentSolution.split('');
+    const newUsedLetters = { ...usedLetters };
+
     const wordAnalysis = currentWord.map((letter, index, array) => {
       if (currentSolution[index] === letter) {
         solutionArray[index] = '';
+        newUsedLetters[letter] = AnalysisColorsEnum.Green;
         return AnalysisColorsEnum.Green;
       } else {
+        if (!newUsedLetters[letter]) newUsedLetters[letter] = AnalysisColorsEnum.Black;
         return AnalysisColorsEnum.Black;
       }
     }) as AnalysisArray;
+
     wordAnalysis.forEach((status, index) => {
       const letter = currentWord[index];
       if (status !== 'green' && solutionArray.includes(letter)) {
         const letterIndex = solutionArray.findIndex(solutionLetter => solutionLetter === letter);
         solutionArray[letterIndex] = '';
         wordAnalysis[index] = AnalysisColorsEnum.Yellow;
+        if (!newUsedLetters[letter] || newUsedLetters[letter] === AnalysisColorsEnum.Black) newUsedLetters[letter] = AnalysisColorsEnum.Yellow;
       }
-    })
-    this.setState({ analyzedBoard: [ ...analyzedBoard, wordAnalysis ]});
+    });
+
+    this.setState({
+      analyzedBoard: [ ...analyzedBoard, wordAnalysis ],
+      usedLetters: newUsedLetters,
+    });
   }
   
   render() {
@@ -159,27 +180,27 @@ class App extends Component {
       currentWord,
       currentWordValid,
       currentGuess,
+      currentSolution,
       gameWon,
+      showModal,
+      usedLetters,
     } = this.state;
-
-    let message = '';
-    if (!currentWordValid) {
-      message = 'Not in word list'
-    } else if (gameWon) {
-      message = 'YOU WON, BUTTMUNCH!!'
-    }
-
-    if (message) {
-      console.log(message);
-    }
 
     const disableKeyboardEnter = currentWord.length < 5 || !currentWordValid;
   
     return (
       <div className="App">
         <header className="App-header">
+          <div className="header-buttons-left" />
           <div className="header-title">
             A WORDLE CLONE
+          </div>
+          <div className="header-buttons-right">
+            {(gameWon || currentGuess === MAX_GUESSES) && (
+              <span className='results-modal-button' onClick={() => this.setState({ showModal: true })}>
+                <i className="fa-solid fa-chart-simple" />
+              </span>
+            )}
           </div>
         </header>
         <div className="App-content">
@@ -189,9 +210,21 @@ class App extends Component {
             currentGuess={currentGuess}
             gameWon={gameWon}
             currentWordValid={currentWordValid}
-            message={message}
           />
-          <Keyboard updateCurrentWord={this.updateCurrentWord} disableKeyboardEnter={disableKeyboardEnter} />
+          <Keyboard
+            updateCurrentWord={this.updateCurrentWord}
+            disableKeyboardEnter={disableKeyboardEnter}
+            usedLetters={usedLetters}
+          />
+          {showModal && (
+            <GameOverModal
+              analyzedBoard={analyzedBoard}
+              currentGuess={currentGuess}
+              gameWon={gameWon}
+              setShowModal={(show) => this.setState({ showModal: show })}
+              solution={currentSolution}
+            />
+          )}
         </div>
       </div>
     );

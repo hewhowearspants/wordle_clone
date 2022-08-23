@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 
 import {
   AnalyzedBoard,
@@ -12,10 +12,9 @@ interface Props {
   currentGuess: number,
   gameWon: boolean,
   currentWordValid: boolean,
-  message: string,
 }
 
-const GameBoard = ({ board, analyzedBoard, currentGuess, gameWon, currentWordValid, message }: Props) => {
+const GameBoard: FC<Props> = ({ board, analyzedBoard, currentGuess, gameWon, currentWordValid }) => {
   const renderBoard = () => {
     return board.map((word, index) => { 
       const analyzedWord = analyzedBoard[index];

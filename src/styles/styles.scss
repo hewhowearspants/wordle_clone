@@ -1,9 +1,12 @@
 @import './reset.scss';
 @import './mixins.scss';
+@import './elements/modal.scss';
 @import './gameboard.scss';
 @import './keyboard.scss';
+@import './game-over-modal.scss';
 
-$header-height: 35px;
+$header-height: 45px;
+$desktop-width: 768px;
 
 body {
   box-sizing: border-box;
@@ -20,14 +23,34 @@ body {
   color: white;
 
   .App-header {
+    @include flex(space-between, center);
     height: $header-height;
-    @include flex(center, flex-start);
-    padding: 0px 8px;
+    padding: 0px 16px;
+    position: relative;
+
     .header-title {
       flex: 1;
-      @media (min-width: 768px) {
+      align-self: center;
+      @media (min-width: $desktop-width) {
         text-align: center;
         font-size: 30px;
+      }
+    }
+
+    .header-buttons-right {
+      align-self: center;
+      position: absolute;
+      right: 16px;
+      @include vertical-align();
+      span {
+        margin-left: 12px;
+      }
+      .results-modal-button {
+        font-size: 24px;
+        cursor: pointer;
+        @media (min-width: $desktop-width) {
+          font-size: 24px;
+        }
       }
     }
   }

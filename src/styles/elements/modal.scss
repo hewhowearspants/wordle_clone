@@ -1,0 +1,28 @@
+.modal-wrapper {
+  position: fixed;
+  @include flex();
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 20;
+  .modal-content {
+    max-height: 90vh;
+    overflow-x: auto;
+    position: relative;
+    text-align: center;
+    border-radius: 5px;
+    background-color: lightgrey;
+    .component-header {
+      padding: 5px 15px;
+    }
+    .modal-close-button {
+      position: absolute;
+      top: 8px;
+      right: 15px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+  }
+}

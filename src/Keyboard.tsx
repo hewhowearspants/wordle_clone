@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 
 import { KEYBOARD_LAYOUT, SpecialCharactersEnum } from './types';
 
@@ -12,16 +12,17 @@ const letterMap = {
 interface Props {
   updateCurrentWord: Function,
   disableKeyboardEnter: boolean,
+  usedLetters: { [key: string]: string },
 }
 
-const Keyboard = ({ updateCurrentWord, disableKeyboardEnter }: Props) => {
+const Keyboard: FC<Props> = ({ updateCurrentWord, disableKeyboardEnter, usedLetters }) => {
   return (
     <div className='keyboard'>
       {layout.map((row, index) => (
         <div className={`row ${'row' + (index + 1)}`} key={'row' + index}>
           {row.map(letter => (
             <button
-              className='key'
+              className={`key ${usedLetters[letter] ? usedLetters[letter] : ''}`}
               id={letter}
               key={letter}
               onClick={() => updateCurrentWord({ key: letter })}
