@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { words } from './words';
+import { allowedWords, words } from './words';
 import GameBoard from './GameBoard';
 import Keyboard from './Keyboard';
 
@@ -64,7 +64,10 @@ class App extends Component {
       this.updateBoard([ ...newCurrentWord ]);
   
       if (newCurrentWord.length === 5) {
-        const wordIsInList = words.includes(newCurrentWord.join(''));
+        let wordIsInList = words.includes(newCurrentWord.join(''));
+        if (!wordIsInList) {
+          wordIsInList = allowedWords.includes(newCurrentWord.join(''));
+        }
         if (!wordIsInList) {
           this.setState({ currentWordValid: false });
         }
