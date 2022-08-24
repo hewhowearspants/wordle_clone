@@ -97,7 +97,7 @@ class App extends Component {
     if (key === SpecialCharactersEnum.Enter) {
       if (currentGuess < MAX_GUESSES) {
         if (currentWord.length === 5 && currentWordValid) {
-          this.checkGuess();
+          this.analyzeWord();
           newCurrentWord = [];
           this.setState({
             currentWord: newCurrentWord,
@@ -126,49 +126,43 @@ class App extends Component {
     this.setState({ board });
   }
 
-  checkGuess = () => {
-    const { currentWord, currentSolution } = this.state;
-  
-    if (currentWord.join('').toLowerCase() === currentSolution) {
-      this.setState({ 
-        analyzedBoard: [ ...this.state.analyzedBoard, SOLVED_ANALYSIS_ARRAY ],
-        currentGuess: -1,
-        gameWon: true,
-      });
-      window.removeEventListener('keydown', this.updateCurrentWord);
-    } else {
-      this.analyzeWord();
-    }
-  }
-
-  analyzeWord = (currentWord = this.state.currentWord) => {
-    const { currentSolution, analyzedBoard, usedLetters } = this.state;
-    const solutionArray = currentSolution.split('');
+  analyzeWord = () => {
+    const { currentWord, currentSolution, analyzedBoard, usedLetters } = this.state;
     const newUsedLetters = { ...usedLetters };
+    
+    if (currentWord.join('').toLowerCase() === currentSolution) {
+      currentWord.forEach(letter => newUsedLetters[letter] = AnalysisColorsEnum.Green);
+      this.setState({
+        gameWon: true,
+        analyzedBoard: [ ...analyzedBoard, SOLVED_ANALYSIS_ARRAY ],
+        usedLetters: newUsedLetters,
+      });
+      return;
+    }
 
-    const wordAnalysis = currentWord.map((letter, index, array) => {
-      if (currentSolution[index] === letter) {
-        solutionArray[index] = '';
+    const solutionArray = currentSolution.split('');
+
+    const analyzedWord = currentWord.map((letter, index, array) => {
+      if (solutionArray[index] === letter) {
         newUsedLetters[letter] = AnalysisColorsEnum.Green;
+        solutionArray[index] = '';
         return AnalysisColorsEnum.Green;
-      } else {
-        if (!newUsedLetters[letter]) newUsedLetters[letter] = AnalysisColorsEnum.Black;
-        return AnalysisColorsEnum.Black;
       }
+
+      for (let i = 0; i < array.length; i++) {
+        if (solutionArray[i] === letter && currentWord[i] !== letter) {
+          solutionArray[i] = '';
+          if (!newUsedLetters[letter]) newUsedLetters[letter] = AnalysisColorsEnum.Yellow;
+          return AnalysisColorsEnum.Yellow;
+        }
+      }
+
+      newUsedLetters[letter] = AnalysisColorsEnum.Black;
+      return AnalysisColorsEnum.Black;
     }) as AnalysisArray;
 
-    wordAnalysis.forEach((status, index) => {
-      const letter = currentWord[index];
-      if (status !== 'green' && solutionArray.includes(letter)) {
-        const letterIndex = solutionArray.findIndex(solutionLetter => solutionLetter === letter);
-        solutionArray[letterIndex] = '';
-        wordAnalysis[index] = AnalysisColorsEnum.Yellow;
-        if (!newUsedLetters[letter] || newUsedLetters[letter] === AnalysisColorsEnum.Black) newUsedLetters[letter] = AnalysisColorsEnum.Yellow;
-      }
-    });
-
     this.setState({
-      analyzedBoard: [ ...analyzedBoard, wordAnalysis ],
+      analyzedBoard: [ ...analyzedBoard, analyzedWord ],
       usedLetters: newUsedLetters,
     });
   }
