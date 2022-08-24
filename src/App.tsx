@@ -157,7 +157,7 @@ class App extends Component {
         }
       }
 
-      newUsedLetters[letter] = AnalysisColorsEnum.Black;
+      if (!newUsedLetters[letter]) newUsedLetters[letter] = AnalysisColorsEnum.Black;
       return AnalysisColorsEnum.Black;
     }) as AnalysisArray;
 
