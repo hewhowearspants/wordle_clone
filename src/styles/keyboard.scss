@@ -47,13 +47,13 @@
         flex: 1.5;
       }
       &#Enter {
-        background-color: rgba(skyblue, 0.75);
+        background-color: #6fa5bd;
         &:disabled {
-          background-color: rgba(skyblue, 0.25);
+          background-color: #6fa5bd66;
         }
       }
       &#Backspace {
-        background-color: rgba(255,0,0,0.5);
+        background-color: #CC3363;
         color: lightgrey;
       }
     }
