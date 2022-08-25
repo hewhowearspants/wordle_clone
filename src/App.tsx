@@ -14,6 +14,7 @@ import {
   SOLVED_ANALYSIS_ARRAY,
   STARTING_BOARD,
   MAX_GUESSES,
+  SAVE_DATA_KEY,
 } from './types';
 
 interface State {
@@ -28,25 +29,29 @@ interface State {
   usedLetters: { [key: string]: string },
 }
 
+const initialState = {
+  board: STARTING_BOARD,
+  analyzedBoard: [],
+  currentSolution: '',
+  currentGuess: 0,
+  currentWord: [],
+  currentWordValid: true,
+  gameWon: false,
+  showModal: false,
+  usedLetters: {},
+} as State;
+
 class App extends Component {
-  state = {
-    board: STARTING_BOARD,
-    analyzedBoard: [],
-    currentSolution: '',
-    currentGuess: 0,
-    currentWord: [],
-    currentWordValid: true,
-    gameWon: false,
-    showModal: false,
-    usedLetters: {},
-  } as State;
+  state = initialState;
 
   componentDidMount() {
     window.addEventListener('keydown', this.updateCurrentWord);
 
-    const solutionIndex = Math.floor(Math.random() * words.length);
-    const currentSolution = words[solutionIndex];
-    this.setState({ currentSolution });
+    if (localStorage.getItem(SAVE_DATA_KEY)) {
+      this.loadState();
+    } else {
+      this.setState({ currentSolution: this.loadSolution() });
+    }
   }
 
   componentDidUpdate(_, prevState) {
@@ -55,12 +60,37 @@ class App extends Component {
       || (!prevState.gameWon && this.state.gameWon)
     ) {
       window.removeEventListener('keydown', this.updateCurrentWord);
-      this.setState({ showModal: true });
+      this.setState({ showModal: true }, this.saveState);
     }
   }
 
   componentWillUnmount() {
     window.removeEventListener('keydown', this.updateCurrentWord);
+    this.saveState();
+  }
+
+  saveState = () => {
+    localStorage.setItem(SAVE_DATA_KEY, JSON.stringify(this.state));
+  }
+
+  loadState = () => {
+    const saveData = localStorage.getItem(SAVE_DATA_KEY);
+    this.setState(JSON.parse(saveData as string));
+  }
+
+  loadSolution = () => {
+    const solutionIndex = Math.floor(Math.random() * words.length);
+    return words[solutionIndex];
+  }
+
+  resetState = () => {
+    window.removeEventListener('keydown', this.updateCurrentWord);
+    window.addEventListener('keydown', this.updateCurrentWord);
+
+    this.setState({
+      ...initialState,
+      currentSolution: this.loadSolution(),
+    }, this.saveState);
   }
 
   updateCurrentWord = ({ key }) => {
@@ -102,28 +132,28 @@ class App extends Component {
           this.setState({
             currentWord: newCurrentWord,
           }, () => {
-            this.setState({ currentGuess: currentGuess + 1 });
+            this.setState({ currentGuess: currentGuess + 1 }, this.saveState);
           });
         }
       } else {
         this.setState({
           showModal: true
-        });
-        // save results to localStorage
+        }, this.saveState);
       }
     }
   }
 
   updateBoard = (newCurrentWord) => {
     const { board, currentGuess } = this.state;
+    const newBoard = [ ...board ];
 
     if (newCurrentWord.length < 5) {
       while (newCurrentWord.length < 5) {
         newCurrentWord.push('');
       }
     }
-    board[currentGuess] = newCurrentWord;
-    this.setState({ board });
+    newBoard[currentGuess] = newCurrentWord;
+    this.setState({ board: newBoard });
   }
 
   analyzeWord = () => {
@@ -191,10 +221,13 @@ class App extends Component {
           </div>
           <div className="header-buttons-right">
             {(gameWon || currentGuess === MAX_GUESSES) && (
-              <span className='results-modal-button' onClick={() => this.setState({ showModal: true })}>
+              <span className='results-modal-button' onClick={() => this.setState({ showModal: true })} title='Show Results'>
                 <i className="fa-solid fa-chart-simple" />
               </span>
             )}
+            <span className='new-game-button' onClick={this.resetState} title='New Game'>
+              <i className="fa-solid fa-arrows-rotate" />
+            </span>
           </div>
         </header>
         <div className="App-content">
@@ -217,6 +250,7 @@ class App extends Component {
               gameWon={gameWon}
               setShowModal={(show) => this.setState({ showModal: show })}
               solution={currentSolution}
+              resetGame={this.resetState}
             />
           )}
         </div>

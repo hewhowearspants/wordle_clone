@@ -44,8 +44,6 @@ body {
       @include vertical-align();
       span {
         margin-left: 12px;
-      }
-      .results-modal-button {
         font-size: 24px;
         cursor: pointer;
         @media (min-width: $desktop-width) {

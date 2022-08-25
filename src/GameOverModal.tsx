@@ -11,6 +11,7 @@ interface Props {
   gameWon: any,
   setShowModal: Function,
   solution: string,
+  resetGame: Function,
 }
 
 const colorSquaresMap = {
@@ -19,7 +20,7 @@ const colorSquaresMap = {
   [AnalysisColorsEnum.Black]: '⬛️',
 }
 
-const GameOverModal: FC<Props> = ({ analyzedBoard, currentGuess, gameWon, setShowModal, solution }) => {
+const GameOverModal: FC<Props> = ({ analyzedBoard, currentGuess, gameWon, setShowModal, solution, resetGame }) => {
   let message = '';
   if (gameWon) {
     switch(currentGuess) {
@@ -81,6 +82,9 @@ const GameOverModal: FC<Props> = ({ analyzedBoard, currentGuess, gameWon, setSho
       <div className='share-results'>
         <button onClick={() => copyToClipboard(squaresString)}>
           Copy Results
+        </button>
+        <button onClick={() => resetGame()}>
+          New Game
         </button>
       </div>
     </Modal>

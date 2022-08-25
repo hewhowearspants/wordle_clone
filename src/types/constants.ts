@@ -39,3 +39,5 @@ export const KEYBOARD_LAYOUT = [
   ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
   [SpecialCharactersEnum.Enter, 'z', 'x' ,'c' ,'v' ,'b' ,'n' ,'m', SpecialCharactersEnum.Backspace],
 ];
+
+export const SAVE_DATA_KEY = 'wordleSaveData';
