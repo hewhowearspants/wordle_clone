@@ -19,6 +19,9 @@
     justify-content: space-between;
     border-radius: 10px;
     flex: 1;
+    .results-container {
+      font-size: 27px;
+    }
   }
   .page-changer {
     display: flex;
@@ -27,6 +30,7 @@
     height: 31px;
     .page-changer-button {
       flex: 1;
+      align-self: center;
       cursor: pointer;
       color: $light-color-2;
       &:hover {
