@@ -13,27 +13,28 @@
       font-weight: bold;
       width: 50px;
       height: 50px;
-      border: 2px solid rgba(255, 255, 255, 0.25);
+      border: 2px solid rgba($light-color, 0.25);
       margin: 5px;
       @include flex(center, center);
-
-      &.green {
-        background-color: green;
-      }
-      &.yellow {
-        background-color: goldenrod;
-      }
     }
 
     &.guessed .letter {
-      border-color: rgba(255, 255, 255, 0.5);
+      border-color: rgba($light-color, 0.0);
+      background: rgba($light-color, 0.1);
+      
+      &.green {
+        background-color: $green-color;
+      }
+      &.yellow {
+        background-color: $yellow-color;
+      }
     }
     &.current .letter {
-      border-color: white;
-      background: rgba(255, 255, 255, 0.10);
+      border-color: $light-color;
+      background: rgba($light-color, 0.20);
     }
     &.invalid .letter {
-      border-color: red;
+      border-color: $red-color;
     }
   }
 }

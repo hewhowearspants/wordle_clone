@@ -1,0 +1,37 @@
+.game-modal-content .daily-results {
+  .results-time {
+    margin-bottom: 8px;
+    padding-top: 12px;
+    font-size: 20px;
+    & .won-icon {
+      color: $blue-color;
+    }
+    & .lost-icon {
+      color: $red-color;
+    }
+  }
+  .results {
+    padding: 8px;
+    margin: 8px 16px 16px;
+    background: $dark-color;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 10px;
+    flex: 1;
+  }
+  .page-changer {
+    display: flex;
+    padding: 16px;
+    border-top: 1px solid rgba($light-color, 0.5);
+    height: 31px;
+    .page-changer-button {
+      flex: 1;
+      cursor: pointer;
+      color: $light-color-2;
+      &:hover {
+        color: $light-color;
+      }
+    }
+  }
+}

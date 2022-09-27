@@ -15,6 +15,22 @@ export enum WordClasses {
   Invalid = 'invalid',
 }
 
+export enum PageDirections {
+  Back = 'back',
+  Forward = 'forward',
+}
+
+export enum HistoryResultsPages {
+  Daily = 'daily',
+  Graph = 'graph',
+}
+
+export enum ModalTypes {
+  Today = 'today',
+  Daily = 'daily',
+  Graph = 'graph',
+}
+
 export const SOLVED_ANALYSIS_ARRAY = [
   AnalysisColorsEnum.Green,
   AnalysisColorsEnum.Green,
@@ -40,4 +56,12 @@ export const KEYBOARD_LAYOUT = [
   [SpecialCharactersEnum.Enter, 'z', 'x' ,'c' ,'v' ,'b' ,'n' ,'m', SpecialCharactersEnum.Backspace],
 ];
 
-export const SAVE_DATA_KEY = 'wordleSaveData';
+export const SAVED_STATE_KEY = 'edwordsSavedState';
+
+export const HISTORY_DATA_KEY = 'edwordsHistory'
+
+export const COLOR_SQUARES_MAP = {
+  [AnalysisColorsEnum.Green]: '🟩',
+  [AnalysisColorsEnum.Yellow]: '🟨',
+  [AnalysisColorsEnum.Black]: '⬛️',
+}

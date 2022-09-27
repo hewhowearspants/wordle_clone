@@ -1,8 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, createContext } from 'react';
 import { allowedWords, words } from './words';
 import GameBoard from './GameBoard';
 import Keyboard from './Keyboard';
-import GameOverModal from './GameOverModal';
+import GameModal from './GameModal';
+
+import { IModalContext, PreviousResults } from './types';
 
 import {
   AnalysisArray,
@@ -14,7 +16,8 @@ import {
   SOLVED_ANALYSIS_ARRAY,
   STARTING_BOARD,
   MAX_GUESSES,
-  SAVE_DATA_KEY,
+  SAVED_STATE_KEY,
+  HISTORY_DATA_KEY,
 } from './types';
 
 interface State {
@@ -41,14 +44,21 @@ const initialState = {
   usedLetters: {},
 } as State;
 
+export const ModalContext = createContext({} as IModalContext);
+
 class App extends Component {
   state = initialState;
 
   componentDidMount() {
     window.addEventListener('keydown', this.updateCurrentWord);
 
-    if (localStorage.getItem(SAVE_DATA_KEY)) {
-      this.loadState();
+    if (localStorage.getItem(SAVED_STATE_KEY)) {
+      const savedStateData = JSON.parse(localStorage.getItem(SAVED_STATE_KEY) as string);
+      if (savedStateData.gameWon || savedStateData.currentGuess === MAX_GUESSES) {
+        this.resetState();
+      } else {
+        this.loadState();
+      }
     } else {
       this.setState({ currentSolution: this.loadSolution() });
     }
@@ -61,6 +71,9 @@ class App extends Component {
     ) {
       window.removeEventListener('keydown', this.updateCurrentWord);
       this.setState({ showModal: true }, this.saveState);
+      if (this.state.currentGuess === MAX_GUESSES) {
+        this.saveHistory();
+      }
     }
   }
 
@@ -70,17 +83,42 @@ class App extends Component {
   }
 
   saveState = () => {
-    localStorage.setItem(SAVE_DATA_KEY, JSON.stringify(this.state));
+    localStorage.setItem(SAVED_STATE_KEY, JSON.stringify(this.state));
+  }
+
+  saveHistory = () => {
+    const historyData = localStorage[HISTORY_DATA_KEY] ? JSON.parse(localStorage[HISTORY_DATA_KEY] as string) : { previousWords: {}, previousResults: [] };
+    const { previousWords, previousResults } = historyData;
+    const { currentSolution, analyzedBoard, gameWon } = this.state;
+
+    previousWords[this.state.currentSolution] = true;
+    previousResults.push({
+      timestamp: Date.now(),
+      results: analyzedBoard,
+      word: currentSolution,
+      gameWon: gameWon,
+    });
+    localStorage.setItem(HISTORY_DATA_KEY, JSON.stringify({ previousWords, previousResults }));
   }
 
   loadState = () => {
-    const saveData = localStorage.getItem(SAVE_DATA_KEY);
-    this.setState(JSON.parse(saveData as string));
+    const savedState = localStorage.getItem(SAVED_STATE_KEY);
+    this.setState(JSON.parse(savedState as string));
   }
 
   loadSolution = () => {
-    const solutionIndex = Math.floor(Math.random() * words.length);
-    return words[solutionIndex];
+    let solutionIndex = Math.floor(Math.random() * words.length);
+    let solution = words[solutionIndex];
+
+    if (localStorage[HISTORY_DATA_KEY]) {
+      const history = JSON.parse(localStorage[HISTORY_DATA_KEY]);
+      while (history.previousWords[solution]) {
+        solutionIndex = Math.floor(Math.random() * words.length);
+        solution = words[solutionIndex];
+      }
+    } 
+
+    return solution;
   }
 
   resetState = () => {
@@ -135,10 +173,6 @@ class App extends Component {
             this.setState({ currentGuess: currentGuess + 1 }, this.saveState);
           });
         }
-      } else {
-        this.setState({
-          showModal: true
-        }, this.saveState);
       }
     }
   }
@@ -166,7 +200,7 @@ class App extends Component {
         gameWon: true,
         analyzedBoard: [ ...analyzedBoard, SOLVED_ANALYSIS_ARRAY ],
         usedLetters: newUsedLetters,
-      });
+      }, this.saveHistory);
       return;
     }
 
@@ -191,6 +225,7 @@ class App extends Component {
       return AnalysisColorsEnum.Black;
     }) as AnalysisArray;
 
+
     this.setState({
       analyzedBoard: [ ...analyzedBoard, analyzedWord ],
       usedLetters: newUsedLetters,
@@ -211,16 +246,21 @@ class App extends Component {
     } = this.state;
 
     const disableKeyboardEnter = currentWord.length < 5 || !currentWordValid;
-  
+
+    let previousResults = {} as PreviousResults;
+    if (localStorage.getItem(HISTORY_DATA_KEY)) {
+      previousResults = JSON.parse(localStorage.getItem(HISTORY_DATA_KEY) as string).previousResults as PreviousResults;
+    }
+
     return (
       <div className="App">
         <header className="App-header">
           <div className="header-buttons-left" />
           <div className="header-title">
-            A WORDLE CLONE
+            EDWORDS
           </div>
           <div className="header-buttons-right">
-            {(gameWon || currentGuess === MAX_GUESSES) && (
+            {!!Object.keys(previousResults).length && (
               <span className='results-modal-button' onClick={() => this.setState({ showModal: true })} title='Show Results'>
                 <i className="fa-solid fa-chart-simple" />
               </span>
@@ -243,16 +283,19 @@ class App extends Component {
             disableKeyboardEnter={disableKeyboardEnter}
             usedLetters={usedLetters}
           />
-          {showModal && (
-            <GameOverModal
-              analyzedBoard={analyzedBoard}
-              currentGuess={currentGuess}
-              gameWon={gameWon}
-              setShowModal={(show) => this.setState({ showModal: show })}
-              solution={currentSolution}
-              resetGame={this.resetState}
-            />
-          )}
+          <ModalContext.Provider value={{
+            analyzedBoard,
+            currentGuess,
+            gameWon,
+            gameOver: gameWon || currentGuess === MAX_GUESSES,
+            solution: currentSolution,
+            resetGame: this.resetState,
+            showModal,
+            setShowModal: (show) => this.setState({ showModal: show }),
+            previousResults,
+          }}>
+            <GameModal />
+          </ModalContext.Provider>
         </div>
       </div>
     );

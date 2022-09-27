@@ -4,9 +4,10 @@ interface Props {
   className?: string;
   onClose?: () => void;
   children: React.ReactNode;
+  show: boolean;
 }
 
-const Modal: FC<Props> = ({ className = '', children, onClose }) => (
+const Modal: FC<Props> = ({ className = '', children, onClose, show }) => show ? (
   <div
     className={`modal-wrapper ${className}`}
     onClick={onClose}
@@ -18,6 +19,6 @@ const Modal: FC<Props> = ({ className = '', children, onClose }) => (
       {children}
     </div>
   </div>
-);
+) : null;
 
 export default Modal;

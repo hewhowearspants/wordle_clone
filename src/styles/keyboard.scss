@@ -9,9 +9,9 @@
 
     .key {
       cursor: pointer;
-      background: grey;
-      -webkit-tap-highlight-color: rgba(255,255,255,0.5);
-      color: white;
+      background: $medium-color;
+      -webkit-tap-highlight-color: rgba($light-color,0.5);
+      color: $light-color;
       flex: 1;
       height: 50px;
       margin-right: 5px;
@@ -22,14 +22,14 @@
       font-size: inherit;
 
       &.black {
-        background: rgba(0,0,0,0.25);
-        color: rgba(255,255,255,0.5);
+        background: rgba($light-color, 0.1);
+        color: rgba($light-color, 0.5);
       }
       &.green {
-        background-color: green;
+        background-color: $green-color;
       }
       &.yellow {
-        background-color: goldenrod;
+        background-color: $yellow-color;
       }
 
       @include flex(center, center);
@@ -39,7 +39,7 @@
       }
       &:disabled {
         cursor: no-drop;
-        color: rgba(0,0,0, 0.5);
+        color: rgba($dark-color, 0.7);
       }
 
       &#Enter,
@@ -47,14 +47,17 @@
         flex: 1.5;
       }
       &#Enter {
-        background-color: #6fa5bd;
+        background-color: $blue-color;
         &:disabled {
-          background-color: #6fa5bd66;
+          background-color: rgba($blue-color, 0.4);
+        }
+        &:not(:disabled) {
+          color: $dark-color;
         }
       }
       &#Backspace {
-        background-color: #CC3363;
-        color: lightgrey;
+        background-color: $red-color;
+        color: $light-color;
       }
     }
   }

@@ -1,12 +1,10 @@
-@import './reset.scss';
-@import './mixins.scss';
+@import './_reset.scss';
+@import './_variables.scss';
+@import './_mixins.scss';
 @import './elements/modal.scss';
 @import './gameboard.scss';
 @import './keyboard.scss';
-@import './game-over-modal.scss';
-
-$header-height: 45px;
-$desktop-width: 768px;
+@import './game-modal.scss';
 
 body {
   box-sizing: border-box;
@@ -19,7 +17,7 @@ body {
 }
 
 .App {
-  background-color: #282c34;
+  background-color: $dark-color;
   color: white;
 
   .App-header {

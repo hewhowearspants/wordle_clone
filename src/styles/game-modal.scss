@@ -1,0 +1,42 @@
+@import './gameModal/daily-results.scss';
+@import './gameModal/today-results.scss';
+@import './gameModal/guesses-graph.scss';
+
+.game-modal {
+  .modal-content {
+    background-color: $medium-color;
+    height: 390px;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+  
+    .game-modal-nav {
+      padding: 10px 15px;
+      text-align: left;
+      .nav-icon {
+        &.selected {
+          color: $blue-color;
+        }
+        &:not(.selected) {
+          cursor: pointer;
+          color: $light-color-2;
+        }
+        &:hover:not(.selected) {
+          color: $light-color;
+        }
+        &:not(:last-child) {
+          margin-right: 10px;
+        }
+      }
+    }
+
+    .game-modal-content {
+      flex: 1;
+      & > div {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+}
